@@ -8,14 +8,14 @@ This is a standalone project that uses [Cobe](https://github.com/shuding/cobe), 
 
 ## What it shows
 
-The animated GIF badge shows a rotating dotted world map with contribution-location markers, country flags, commit counts, and each location's percentage of tracked contributions. The globe completes one seamless rotation per loop. Clicking the badge opens the interactive version, where the globe can be dragged and zoomed. The interactive globe uses the same daily-generated `data.json` as the badge and displays the Cobe world map with flag emoji in its live marker labels. Markers outside a recognized country are shown without a flag.
+The animated GIF badge shows a rotating dotted world map with country markers, flags, commit and PR counts, and each country's percentage of tracked contributions. Its flag and label are compact to minimize overlap. The globe completes one seamless rotation per loop. Clicking the badge opens the interactive version, where the globe can be dragged and zoomed. The interactive globe uses the same daily-generated `data.json` as the badge and displays the Cobe world map with flag emoji in its live marker labels. Contributions in the same country share one marker and one label with summed counts and links to all contributing repositories. Markers outside a recognized country are shown separately without a flag.
 
 ## How it works
 
 1. GitHub Actions searches commits authored by the configured GitHub user since 2023, plus commits that credit the user through a `Co-authored-by:` trailer (matched by login or GitHub noreply/public email).
 2. For each commit's repository, the generator resolves the true origin repository — following GitHub's fork `source` field, and falling back to a commits-search lookup (picking the oldest repository by creation date) to catch repositories that duplicate another repo's commit history without being a registered GitHub fork. Origins are cached per repository so this only runs once per distinct repository, not once per commit.
 3. Commits are grouped by the origin repository's owner, and each owner's public GitHub profile location is geocoded with OpenStreetMap Nominatim. Country codes are determined from the world map's country polygons, falling back to Nominatim for coastal locations outside the polygons; the GIF renders flags from the MIT-licensed flag-icons assets.
-4. The generator writes `badge.gif` for the animated profile badge and `data.json` for the interactive page.
+4. The generator groups geocoded owners by country, using the first owner's location for the country's marker, then writes `badge.gif` for the animated profile badge and `data.json` for the interactive page.
 5. GitHub Pages serves the root `index.html`, which loads Cobe in the browser and renders the interactive globe.
 6. A daily workflow (`.github/workflows/badge-update.yml`) regenerates and commits the badge and shared analytics data.
 

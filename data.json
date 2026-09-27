@@ -1,66 +1,33 @@
 {
   "user": "turbolego",
-  "generatedAt": "2026-09-27T06:58:40.221Z",
+  "generatedAt": "2026-09-27T07:06:46.533Z",
   "totalCommits": 162,
   "totalPullRequests": 26,
   "markers": [
     {
-      "owner": "GULBILBOT",
-      "commits": 97,
-      "pullRequests": 4,
+      "countryCode": "NO",
       "location": [
         61.1529386,
         8.7876653
+      ],
+      "commits": 119,
+      "pullRequests": 4,
+      "owners": [
+        "GULBILBOT",
+        "Experis",
+        "TurboDevsAS",
+        "criger",
+        "tvibitnmkt"
       ],
       "repositories": [
         {
           "name": "gul-bil-bluesky",
           "url": "https://github.com/GULBILBOT/gul-bil-bluesky"
-        }
-      ],
-      "countryCode": "NO"
-    },
-    {
-      "owner": "Experis",
-      "commits": 11,
-      "pullRequests": 0,
-      "location": [
-        61.1529386,
-        8.7876653
-      ],
-      "repositories": [
+        },
         {
           "name": ".github",
           "url": "https://github.com/Experis/.github"
-        }
-      ],
-      "countryCode": "NO"
-    },
-    {
-      "owner": "diegosouzapw",
-      "commits": 7,
-      "pullRequests": 7,
-      "location": [
-        -23.5506507,
-        -46.6333824
-      ],
-      "repositories": [
-        {
-          "name": "OmniRoute",
-          "url": "https://github.com/diegosouzapw/OmniRoute"
-        }
-      ],
-      "countryCode": "BR"
-    },
-    {
-      "owner": "TurboDevsAS",
-      "commits": 4,
-      "pullRequests": 0,
-      "location": [
-        59.9133301,
-        10.7389701
-      ],
-      "repositories": [
+        },
         {
           "name": ".github",
           "url": "https://github.com/TurboDevsAS/.github"
@@ -72,169 +39,152 @@
         {
           "name": "EEGBliss",
           "url": "https://github.com/TurboDevsAS/EEGBliss"
-        }
-      ],
-      "countryCode": "NO"
-    },
-    {
-      "owner": "criger",
-      "commits": 4,
-      "pullRequests": 0,
-      "location": [
-        61.1529386,
-        8.7876653
-      ],
-      "repositories": [
+        },
         {
           "name": "Agentic-Ground-Rules",
           "url": "https://github.com/criger/Agentic-Ground-Rules"
-        }
-      ],
-      "countryCode": "NO"
-    },
-    {
-      "owner": "tvibitnmkt",
-      "commits": 3,
-      "pullRequests": 0,
-      "location": [
-        69.6516345,
-        18.9558585
-      ],
-      "repositories": [
+        },
         {
           "name": "WhaleGuruVR",
           "url": "https://github.com/tvibitnmkt/WhaleGuruVR"
         }
-      ],
-      "countryCode": "NO"
+      ]
     },
     {
-      "owner": "progrium",
-      "commits": 2,
-      "pullRequests": 1,
+      "countryCode": "BR",
+      "location": [
+        -23.5506507,
+        -46.6333824
+      ],
+      "commits": 7,
+      "pullRequests": 7,
+      "owners": [
+        "diegosouzapw"
+      ],
+      "repositories": [
+        {
+          "name": "OmniRoute",
+          "url": "https://github.com/diegosouzapw/OmniRoute"
+        }
+      ]
+    },
+    {
+      "countryCode": "US",
       "location": [
         37.8044557,
         -122.271356
+      ],
+      "commits": 2,
+      "pullRequests": 3,
+      "owners": [
+        "progrium",
+        "DovieW",
+        "kflorence"
       ],
       "repositories": [
         {
           "name": "authsite",
           "url": "https://github.com/progrium/authsite"
+        },
+        {
+          "name": "vscode-insiders-release-notes",
+          "url": "https://github.com/DovieW/vscode-insiders-release-notes"
+        },
+        {
+          "name": "jquery-deserialize",
+          "url": "https://github.com/kflorence/jquery-deserialize"
         }
-      ],
-      "countryCode": "US"
+      ]
     },
     {
-      "owner": "qualweb",
-      "commits": 2,
-      "pullRequests": 7,
+      "countryCode": "PT",
       "location": [
         38.7077507,
         -9.1365919
+      ],
+      "commits": 2,
+      "pullRequests": 7,
+      "owners": [
+        "qualweb"
       ],
       "repositories": [
         {
           "name": "qualweb",
           "url": "https://github.com/qualweb/qualweb"
         }
-      ],
-      "countryCode": "PT"
+      ]
     },
     {
-      "owner": "RightNow-AI",
-      "commits": 1,
-      "pullRequests": 1,
+      "countryCode": "JO",
       "location": [
         31.1667049,
         36.941628
+      ],
+      "commits": 1,
+      "pullRequests": 1,
+      "owners": [
+        "RightNow-AI"
       ],
       "repositories": [
         {
           "name": "openfang",
           "url": "https://github.com/RightNow-AI/openfang"
         }
-      ],
-      "countryCode": "JO"
+      ]
     },
     {
-      "owner": "kyzdes",
-      "commits": 1,
-      "pullRequests": 0,
+      "countryCode": "ME",
       "location": [
         42.2885656,
         18.8419505
+      ],
+      "commits": 1,
+      "pullRequests": 0,
+      "owners": [
+        "kyzdes"
       ],
       "repositories": [
         {
           "name": "fang-upgrade",
           "url": "https://github.com/kyzdes/fang-upgrade"
         }
-      ],
-      "countryCode": "ME"
+      ]
     },
     {
-      "owner": "ashkulz",
-      "commits": 1,
-      "pullRequests": 1,
+      "countryCode": "IN",
       "location": [
         19.3653598,
         73.3685437
+      ],
+      "commits": 1,
+      "pullRequests": 1,
+      "owners": [
+        "ashkulz"
       ],
       "repositories": [
         {
           "name": "committers.top",
           "url": "https://github.com/ashkulz/committers.top"
         }
-      ],
-      "countryCode": "IN"
+      ]
     },
     {
-      "owner": "LHRUN",
-      "commits": 1,
-      "pullRequests": 0,
+      "countryCode": "CN",
       "location": [
         34.5412252,
         108.9237067
+      ],
+      "commits": 1,
+      "pullRequests": 0,
+      "owners": [
+        "LHRUN"
       ],
       "repositories": [
         {
           "name": "bubble",
           "url": "https://github.com/LHRUN/bubble"
         }
-      ],
-      "countryCode": "CN"
-    },
-    {
-      "owner": "DovieW",
-      "commits": 0,
-      "pullRequests": 1,
-      "location": [
-        40.7127281,
-        -74.0060152
-      ],
-      "repositories": [
-        {
-          "name": "vscode-insiders-release-notes",
-          "url": "https://github.com/DovieW/vscode-insiders-release-notes"
-        }
-      ],
-      "countryCode": "US"
-    },
-    {
-      "owner": "kflorence",
-      "commits": 0,
-      "pullRequests": 1,
-      "location": [
-        39.7837304,
-        -100.445882
-      ],
-      "repositories": [
-        {
-          "name": "jquery-deserialize",
-          "url": "https://github.com/kflorence/jquery-deserialize"
-        }
-      ],
-      "countryCode": "US"
+      ]
     }
   ]
 }

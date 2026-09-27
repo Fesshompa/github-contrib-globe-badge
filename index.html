@@ -20,9 +20,9 @@
     .label strong { font-size: 19px; }
     .label span { color: #34d399; font-size: 12px; margin-left: 8px; }
     .label .flag { color: inherit; font-size: 22px; margin: 0 7px 0 0; vertical-align: middle; }
-    .repo-list { display: none; position: absolute; top: calc(100% + 10px); left: 50%; translate: -50% 0; min-width: 220px; padding: 8px; border-radius: 8px; background: #171717; box-shadow: 0 8px 24px #0004; text-align: left; white-space: normal; }
+    .repo-list { display: none; position: absolute; top: calc(100% + 10px); left: 50%; translate: -50% 0; width: min(320px, 80vw); max-height: min(300px, 50vh); overflow-y: auto; padding: 8px; border-radius: 8px; background: #171717; box-shadow: 0 8px 24px #0004; text-align: left; white-space: normal; }
     .label.open .repo-list { display: grid; gap: 5px; }
-    .repo-list a { display: block; color: #d1fae5; font-size: 12px; text-decoration: none; padding: 5px 7px; border-radius: 4px; }
+    .repo-list a { display: block; color: #d1fae5; font-size: 12px; text-decoration: none; padding: 5px 7px; border-radius: 4px; overflow-wrap: anywhere; }
     .repo-list a:hover, .repo-list a:focus { background: #2d3748; color: #fff; }
     .legend { margin: 4px auto 0; color: #6b7280; font-size: 12px; }
     .rule { width: min(74vw, 540px); height: 5px; margin: 24px auto 15px; background: #1745d1; }
@@ -65,11 +65,11 @@
       element.tabIndex = 0;
       const percentage = Math.round(marker.commits / data.totalCommits * 100);
       const repositories = (marker.repositories || []).map((repo) => (
-        `<a href="${repo.url}" target="_blank" rel="noopener noreferrer">${repo.name}</a>`
+        `<a href="${repo.url}" target="_blank" rel="noopener noreferrer">${repo.url.split('/').slice(3).join('/')}</a>`
       )).join('') || '<span>No repository links available</span>';
       const flag = flagEmoji(marker.countryCode);
       element.innerHTML = `${flag ? `<span class="flag" aria-label="${marker.countryCode} flag">${flag}</span>` : ''}<strong>${marker.commits}</strong><span>↑ ${percentage}%</span><span class="repo-list" role="menu">${repositories}</span>`;
-      element.title = `${marker.owner}${marker.countryCode ? ` (${marker.countryCode})` : ''}: ${marker.commits} commits (${percentage}%)`;
+      element.title = `${marker.countryCode || 'Unknown country'}: ${(marker.owners || [marker.owner]).join(', ')} · ${marker.commits} commits, ${marker.pullRequests} PRs (${percentage}% of commits)`;
       element.style.setProperty('--label-anchor', `--cobe-marker-${index}`);
       element.style.setProperty('--label-visible', `var(--cobe-visible-marker-${index}, 0)`);
       element.addEventListener('click', (event) => {

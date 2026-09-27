@@ -3,6 +3,7 @@ import https from 'https';
 import { createCanvas, loadImage } from 'canvas';
 import GIFEncoder from 'gif-encoder-2';
 import { execSync } from 'child_process';
+import { groupMarkersByCountry } from './group-markers.js';
 
 const SIZE = 520;
 const CX = SIZE / 2;
@@ -535,21 +536,21 @@ function roundRect(ctx, x, y, w, h, r) {
 }
 
 function placeLabel(x, y, width, height, placed) {
-  const baseX = Math.max(8, Math.min(SIZE - width - 8, x - width / 2));
-  const baseY = Math.max(8, Math.min(SIZE - height - 8, y - height));
+  const baseX = Math.max(4, Math.min(SIZE - width - 4, x - width / 2));
+  const baseY = Math.max(4, Math.min(SIZE - height - 4, y - height));
   const candidates = [];
-  for (const desiredX of [baseX, 8, SIZE - width - 8, baseX - width / 2, baseX + width / 2]) {
+  for (const desiredX of [baseX, 4, SIZE - width - 4, baseX - width / 2, baseX + width / 2]) {
     for (let row = -10; row <= 10; row += 1) {
-      const left = Math.max(8, Math.min(SIZE - width - 8, desiredX));
-      const dy = row * (height + 8);
-      const top = Math.max(8, Math.min(SIZE - height - 8, baseY + dy));
+      const left = Math.max(4, Math.min(SIZE - width - 4, desiredX));
+      const dy = row * (height + 4);
+      const top = Math.max(4, Math.min(SIZE - height - 4, baseY + dy));
       candidates.push({ left, top, distance: Math.abs(left - baseX) + Math.abs(top - baseY) });
     }
   }
   candidates.sort((a, b) => a.distance - b.distance);
   const spot = candidates.find(({ left, top }) => placed.every((box) => (
-    left >= box.left + width + 4 || box.left >= left + width + 4
-    || top >= box.top + height + 4 || box.top >= top + height + 4
+    left >= box.left + width + 2 || box.left >= left + width + 2
+    || top >= box.top + height + 2 || box.top >= top + height + 2
   ))) || { left: baseX, top: baseY };
   placed.push(spot);
   return [spot.left, spot.top];
@@ -626,34 +627,34 @@ function renderFrame(ctx, centerLonDeg, landGrid, markers, flags, totalCommits, 
     ctx.globalAlpha = opacity;
 
     // Label box
-    const boxWidth = 156;
-    const boxHeight = 48;
+    const boxWidth = 78;
+    const boxHeight = 24;
     const [boxX, boxY] = placeLabel(x, y, boxWidth, boxHeight, placedLabels);
 
-    if (Math.abs(boxX + boxWidth / 2 - x) > 10 || Math.abs(boxY + boxHeight - y) > 10) {
+    if (Math.abs(boxX + boxWidth / 2 - x) > 5 || Math.abs(boxY + boxHeight - y) > 5) {
       ctx.strokeStyle = '#374151';
-      ctx.lineWidth = 1;
+      ctx.lineWidth = 0.5;
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(boxX + boxWidth / 2, boxY + boxHeight / 2);
       ctx.stroke();
     }
     ctx.fillStyle = 'rgba(23, 23, 23, 0.94)';
-    roundRect(ctx, boxX, boxY, boxWidth, boxHeight, 7);
+    roundRect(ctx, boxX, boxY, boxWidth, boxHeight, 3.5);
     ctx.fill();
 
     const flag = flags.get(marker.countryCode);
-    if (flag) ctx.drawImage(flag, boxX + 8, boxY + 11, 28, 21);
+    if (flag) ctx.drawImage(flag, boxX + 4, boxY + 5.5, 14, 10.5);
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 14px monospace';
+    ctx.font = 'bold 7px monospace';
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
-    const textX = flag ? boxX + 43 : boxX + 9;
-    ctx.fillText(`${marker.commits} commits`, textX, boxY + 16);
-    ctx.fillText(`${marker.pullRequests} PRs`, textX, boxY + 34);
+    const textX = flag ? boxX + 21.5 : boxX + 4.5;
+    ctx.fillText(`${marker.commits} commits`, textX, boxY + 8);
+    ctx.fillText(`${marker.pullRequests} PRs`, textX, boxY + 17);
     ctx.fillStyle = '#34d399';
-    ctx.font = '10px monospace';
-    ctx.fillText(`↑ ${percentage}%`, boxX + 115, boxY + 34);
+    ctx.font = '5px monospace';
+    ctx.fillText(`↑ ${percentage}%`, boxX + 57.5, boxY + 17);
 
     ctx.globalAlpha = 1;
   }
@@ -705,8 +706,9 @@ async function main() {
       lastReverseLookup = Date.now();
       marker.countryCode = await reverseCountryCode(marker.location);
     }
-    if (!marker.countryCode) console.warn(`No country flag available for ${marker.owner}`);
+    if (!marker.countryCode) console.warn(`No country flag available for ${(marker.owners || [marker.owner]).join(', ')}`);
   }
+  data.markers = groupMarkersByCountry(data.markers);
   const flags = await loadFlags(data.markers);
   fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
 
@@ -726,7 +728,7 @@ async function main() {
   }
   encoder.finish();
   fs.writeFileSync('badge.gif', Buffer.from(encoder.out.getData()));
-  console.log(`✅ badge.gif written – ${data.markers.length} locations, ${data.totalCommits} commits, ${data.totalPullRequests} merged PRs, ${FRAMES} frames`);
+  console.log(`✅ badge.gif written – ${data.markers.length} country markers, ${data.totalCommits} commits, ${data.totalPullRequests} merged PRs, ${FRAMES} frames`);
 }
 
 main().catch((error) => {
