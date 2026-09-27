@@ -19,6 +19,7 @@
     .label::after { content: ''; position: absolute; width: 7px; height: 7px; background: #171717; transform: rotate(45deg); bottom: -3px; left: calc(50% - 3px); }
     .label strong { font-size: 19px; }
     .label span { color: #34d399; font-size: 12px; margin-left: 8px; }
+    .label .flag { color: inherit; font-size: 22px; margin: 0 7px 0 0; vertical-align: middle; }
     .repo-list { display: none; position: absolute; top: calc(100% + 10px); left: 50%; translate: -50% 0; min-width: 220px; padding: 8px; border-radius: 8px; background: #171717; box-shadow: 0 8px 24px #0004; text-align: left; white-space: normal; }
     .label.open .repo-list { display: grid; gap: 5px; }
     .repo-list a { display: block; color: #d1fae5; font-size: 12px; text-decoration: none; padding: 5px 7px; border-radius: 4px; }
@@ -37,7 +38,7 @@
     <div class="globe-wrap" id="globe-wrap">
       <canvas id="globe" width="1200" height="1200" aria-label="Interactive contribution globe"></canvas>
     </div>
-    <p class="legend">Drag to rotate · Green markers show repository-owner locations</p>
+    <p class="legend">Drag to rotate · Flags show repository-owner countries</p>
     <div class="rule"></div>
     <footer><a href="https://github.com/turbolego/github-contrib-globe-badge">Source repository</a></footer>
   </main>
@@ -52,6 +53,9 @@
     const labels = [];
     let pointer = null;
     const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+    const flagEmoji = (code) => /^[A-Z]{2}$/.test(code || '')
+      ? String.fromCodePoint(...[...code].map((letter) => letter.charCodeAt(0) + 127397))
+      : '';
     document.querySelector('#title').innerHTML = `<a href="https://github.com/${data.user}" target="_blank" rel="noopener noreferrer">${data.user}</a>`;
     document.querySelector('#summary').textContent = `${data.totalCommits.toLocaleString()} tracked commits · updated ${new Date(data.generatedAt).toLocaleDateString()}`;
     data.markers.forEach((marker, index) => {
@@ -63,8 +67,9 @@
       const repositories = (marker.repositories || []).map((repo) => (
         `<a href="${repo.url}" target="_blank" rel="noopener noreferrer">${repo.name}</a>`
       )).join('') || '<span>No repository links available</span>';
-      element.innerHTML = `<strong>${marker.commits}</strong><span>↑ ${percentage}%</span><span class="repo-list" role="menu">${repositories}</span>`;
-      element.title = `${marker.owner}: ${marker.commits} commits (${percentage}%)`;
+      const flag = flagEmoji(marker.countryCode);
+      element.innerHTML = `${flag ? `<span class="flag" aria-label="${marker.countryCode} flag">${flag}</span>` : ''}<strong>${marker.commits}</strong><span>↑ ${percentage}%</span><span class="repo-list" role="menu">${repositories}</span>`;
+      element.title = `${marker.owner}${marker.countryCode ? ` (${marker.countryCode})` : ''}: ${marker.commits} commits (${percentage}%)`;
       element.style.setProperty('--label-anchor', `--cobe-marker-${index}`);
       element.style.setProperty('--label-visible', `var(--cobe-visible-marker-${index}, 0)`);
       element.addEventListener('click', (event) => {

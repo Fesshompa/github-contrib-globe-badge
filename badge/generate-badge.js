@@ -1,6 +1,6 @@
 import fs from 'fs';
 import https from 'https';
-import { createCanvas } from 'canvas';
+import { createCanvas, loadImage } from 'canvas';
 import GIFEncoder from 'gif-encoder-2';
 import { execSync } from 'child_process';
 
@@ -443,6 +443,33 @@ function pointInGeometry(lon, lat, geometry) {
   return false;
 }
 
+function countryCodeAt([lat, lon], geojson) {
+  const feature = geojson.features.find(({ geometry }) => pointInGeometry(lon, lat, geometry));
+  if (!feature) return null;
+  const code = feature.properties['ISO3166-1-Alpha-2'];
+  // These two countries have "-99" instead of ISO codes in geo-countries.
+  const missingCodes = { France: 'FR', Norway: 'NO' };
+  return /^[A-Z]{2}$/.test(code) ? code : missingCodes[feature.properties.name] || null;
+}
+
+async function reverseCountryCode([lat, lon]) {
+  const result = await fetchJSON(
+    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=3&addressdetails=1`,
+    { 'User-Agent': 'github-contrib-globe-badge/1.0' },
+  );
+  const code = result.address?.country_code?.toUpperCase();
+  return /^[A-Z]{2}$/.test(code) ? code : null;
+}
+
+async function loadFlags(markers) {
+  const codes = new Set(markers.map((marker) => marker.countryCode).filter(Boolean));
+  return new Map(await Promise.all([...codes].map(async (code) => {
+    const svg = fs.readFileSync(new URL(`../node_modules/flag-icons/flags/4x3/${code.toLowerCase()}.svg`, import.meta.url), 'utf8');
+    const sizedSvg = svg.replace('<svg ', '<svg width="64" height="48" ');
+    return [code, await loadImage(Buffer.from(sizedSvg))];
+  })));
+}
+
 function landPolygons(geojson) {
   const polygons = [];
   for (const feature of geojson.features || []) {
@@ -507,7 +534,28 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-function renderFrame(ctx, centerLonDeg, landGrid, markers, totalCommits, totalPullRequests) {
+function placeLabel(x, y, width, height, placed) {
+  const baseX = Math.max(8, Math.min(SIZE - width - 8, x - width / 2));
+  const baseY = Math.max(8, Math.min(SIZE - height - 8, y - height));
+  const candidates = [];
+  for (const desiredX of [baseX, 8, SIZE - width - 8, baseX - width / 2, baseX + width / 2]) {
+    for (let row = -10; row <= 10; row += 1) {
+      const left = Math.max(8, Math.min(SIZE - width - 8, desiredX));
+      const dy = row * (height + 8);
+      const top = Math.max(8, Math.min(SIZE - height - 8, baseY + dy));
+      candidates.push({ left, top, distance: Math.abs(left - baseX) + Math.abs(top - baseY) });
+    }
+  }
+  candidates.sort((a, b) => a.distance - b.distance);
+  const spot = candidates.find(({ left, top }) => placed.every((box) => (
+    left >= box.left + width + 4 || box.left >= left + width + 4
+    || top >= box.top + height + 4 || box.top >= top + height + 4
+  ))) || { left: baseX, top: baseY };
+  placed.push(spot);
+  return [spot.left, spot.top];
+}
+
+function renderFrame(ctx, centerLonDeg, landGrid, markers, flags, totalCommits, totalPullRequests) {
   // Background
   ctx.fillStyle = '#fff';
   ctx.fillRect(0, 0, SIZE, SIZE);
@@ -552,19 +600,12 @@ function renderFrame(ctx, centerLonDeg, landGrid, markers, totalCommits, totalPu
   ctx.restore();
 
   // Markers — fade near the globe edge for smooth rotation
-  for (const marker of markers) {
-    const p = project(marker.location[0], marker.location[1], centerLonDeg);
-    if (!p) continue;
-    const [x, y, z] = p;
-    const opacity = Math.min(1, z * 2.5);
-    if (opacity <= 0) continue;
-    const activityCount = marker.commits + marker.pullRequests;
-    const totalActivities = totalCommits + totalPullRequests;
-    const percentage = totalActivities ? Math.round((activityCount / totalActivities) * 100) : 0;
-
-    ctx.globalAlpha = opacity;
-
-    // Marker dot
+  const visibleMarkers = markers.map((marker) => ({
+    marker,
+    position: project(marker.location[0], marker.location[1], centerLonDeg),
+  })).filter(({ position }) => position && position[2] > 0);
+  for (const { position: [x, y, z] } of visibleMarkers) {
+    ctx.globalAlpha = Math.min(1, z * 2.5);
     ctx.fillStyle = '#34d399';
     ctx.strokeStyle = '#fff';
     ctx.lineWidth = 2;
@@ -572,66 +613,102 @@ function renderFrame(ctx, centerLonDeg, landGrid, markers, totalCommits, totalPu
     ctx.arc(x, y, 6, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+
+  const placedLabels = [];
+  for (const { marker, position: [x, y, z] } of visibleMarkers) {
+    const opacity = Math.min(1, z * 2.5);
+    const activityCount = marker.commits + marker.pullRequests;
+    const totalActivities = totalCommits + totalPullRequests;
+    const percentage = totalActivities ? Math.round((activityCount / totalActivities) * 100) : 0;
+
+    ctx.globalAlpha = opacity;
 
     // Label box
-    const boxWidth = 118;
+    const boxWidth = 156;
     const boxHeight = 48;
-    const boxX = Math.max(8, Math.min(SIZE - boxWidth - 8, x - boxWidth / 2));
-    const boxY = Math.max(8, y - 48);
+    const [boxX, boxY] = placeLabel(x, y, boxWidth, boxHeight, placedLabels);
 
+    if (Math.abs(boxX + boxWidth / 2 - x) > 10 || Math.abs(boxY + boxHeight - y) > 10) {
+      ctx.strokeStyle = '#374151';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(boxX + boxWidth / 2, boxY + boxHeight / 2);
+      ctx.stroke();
+    }
     ctx.fillStyle = 'rgba(23, 23, 23, 0.94)';
     roundRect(ctx, boxX, boxY, boxWidth, boxHeight, 7);
     ctx.fill();
 
+    const flag = flags.get(marker.countryCode);
+    if (flag) ctx.drawImage(flag, boxX + 8, boxY + 11, 28, 21);
     ctx.fillStyle = '#fff';
     ctx.font = 'bold 14px monospace';
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
-    ctx.fillText(`${marker.commits} commits`, boxX + 9, boxY + 16);
-    ctx.fillText(`${marker.pullRequests} PRs`, boxX + 9, boxY + 34);
+    const textX = flag ? boxX + 43 : boxX + 9;
+    ctx.fillText(`${marker.commits} commits`, textX, boxY + 16);
+    ctx.fillText(`${marker.pullRequests} PRs`, textX, boxY + 34);
     ctx.fillStyle = '#34d399';
     ctx.font = '10px monospace';
-    ctx.fillText(`↑ ${percentage}%`, boxX + 77, boxY + 34);
+    ctx.fillText(`↑ ${percentage}%`, boxX + 115, boxY + 34);
 
     ctx.globalAlpha = 1;
   }
 }
 
 async function main() {
-  const commitCache = loadCommitCache();
-  const { counts, totalCommits, totalPullRequests } = await getContributions(USER, commitCache);
-  // Persist right away so already-resolved commits are saved even if a
-  // later step (geocoding, GIF rendering) fails on this run.
-  fs.writeFileSync(COMMIT_CACHE_PATH, JSON.stringify(commitCache, null, 2));
-  const rankedOwners = [...counts.entries()].sort((a, b) => b[1].commits - a[1].commits);
-  console.log(`Found ${totalCommits} commits and ${totalPullRequests} merged PRs across ${counts.size} owners`);
-  // Walk the full ranking (not just the top 8) so an owner with no usable
-  // location — e.g. a bot or org account — doesn't consume one of the 8
-  // marker slots and hide a lower-ranked but geocodable contributor.
-  const markers = [];
-  for (const [owner, stats] of rankedOwners) {
-    if (markers.length >= 1000) break;
-    const location = await getOwnerLocation(owner).then(geocode);
-    console.log(`Located ${owner}: ${location ? location.join(', ') : 'unknown'}`);
-    if (location) markers.push({
-      owner,
-      commits: stats.commits,
-      pullRequests: stats.pullRequests,
-      location,
-      repositories: [...stats.repositories].sort().map((fullName) => ({
-        name: fullName.split('/').slice(1).join('/'),
-        url: `https://github.com/${fullName}`,
-      })),
-    });
+  const renderOnly = process.argv.slice(2).includes('--render-only');
+  if (process.argv.slice(2).some((arg) => arg !== '--render-only')) {
+    throw new Error('Usage: node badge/generate-badge.js [--render-only]');
+  }
+  let data;
+  if (renderOnly) {
+    data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+  } else {
+    const commitCache = loadCommitCache();
+    const { counts, totalCommits, totalPullRequests } = await getContributions(USER, commitCache);
+    // Persist right away so already-resolved commits are saved even if a
+    // later step (geocoding, GIF rendering) fails on this run.
+    fs.writeFileSync(COMMIT_CACHE_PATH, JSON.stringify(commitCache, null, 2));
+    const rankedOwners = [...counts.entries()].sort((a, b) => b[1].commits - a[1].commits);
+    console.log(`Found ${totalCommits} commits and ${totalPullRequests} merged PRs across ${counts.size} owners`);
+    // Walk the full ranking (not just the top 8) so an owner with no usable
+    // location — e.g. a bot or org account — doesn't consume one of the 8
+    // marker slots and hide a lower-ranked but geocodable contributor.
+    const markers = [];
+    for (const [owner, stats] of rankedOwners) {
+      if (markers.length >= 1000) break;
+      const location = await getOwnerLocation(owner).then(geocode);
+      console.log(`Located ${owner}: ${location ? location.join(', ') : 'unknown'}`);
+      if (location) markers.push({
+        owner,
+        commits: stats.commits,
+        pullRequests: stats.pullRequests,
+        location,
+        repositories: [...stats.repositories].sort().map((fullName) => ({
+          name: fullName.split('/').slice(1).join('/'),
+          url: `https://github.com/${fullName}`,
+        })),
+      });
+    }
+    data = { user: USER, generatedAt: new Date().toISOString(), totalCommits, totalPullRequests, markers };
   }
   const geojson = await fetchJSON(WORLD_GEOJSON_URL, { 'User-Agent': 'github-contrib-globe-badge/1.0' });
-  fs.writeFileSync('data.json', JSON.stringify({
-    user: USER,
-    generatedAt: new Date().toISOString(),
-    totalCommits,
-    totalPullRequests,
-    markers,
-  }, null, 2));
+  let lastReverseLookup = 0;
+  for (const marker of data.markers) {
+    marker.countryCode = countryCodeAt(marker.location, geojson);
+    if (!marker.countryCode) {
+      await new Promise((resolve) => setTimeout(resolve, Math.max(0, 1100 - (Date.now() - lastReverseLookup))));
+      lastReverseLookup = Date.now();
+      marker.countryCode = await reverseCountryCode(marker.location);
+    }
+    if (!marker.countryCode) console.warn(`No country flag available for ${marker.owner}`);
+  }
+  const flags = await loadFlags(data.markers);
+  fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
 
   // Render animated GIF — globe rotates one full turn seamlessly.
   const landGrid = computeLandGrid(geojson);
@@ -644,12 +721,12 @@ async function main() {
   encoder.start();
   for (let i = 0; i < FRAMES; i += 1) {
     const angle = (360 / FRAMES) * i;
-    renderFrame(ctx, angle, landGrid, markers, totalCommits, totalPullRequests);
+    renderFrame(ctx, angle, landGrid, data.markers, flags, data.totalCommits, data.totalPullRequests);
     encoder.addFrame(ctx);
   }
   encoder.finish();
   fs.writeFileSync('badge.gif', Buffer.from(encoder.out.getData()));
-  console.log(`✅ badge.gif written – ${markers.length} locations, ${totalCommits} commits, ${totalPullRequests} merged PRs, ${FRAMES} frames`);
+  console.log(`✅ badge.gif written – ${data.markers.length} locations, ${data.totalCommits} commits, ${data.totalPullRequests} merged PRs, ${FRAMES} frames`);
 }
 
 main().catch((error) => {

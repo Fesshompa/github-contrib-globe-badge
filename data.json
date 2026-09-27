@@ -17,7 +17,8 @@
           "name": "gul-bil-bluesky",
           "url": "https://github.com/GULBILBOT/gul-bil-bluesky"
         }
-      ]
+      ],
+      "countryCode": "NO"
     },
     {
       "owner": "Experis",
@@ -32,7 +33,8 @@
           "name": ".github",
           "url": "https://github.com/Experis/.github"
         }
-      ]
+      ],
+      "countryCode": "NO"
     },
     {
       "owner": "diegosouzapw",
@@ -47,7 +49,8 @@
           "name": "OmniRoute",
           "url": "https://github.com/diegosouzapw/OmniRoute"
         }
-      ]
+      ],
+      "countryCode": "BR"
     },
     {
       "owner": "TurboDevsAS",
@@ -70,7 +73,8 @@
           "name": "EEGBliss",
           "url": "https://github.com/TurboDevsAS/EEGBliss"
         }
-      ]
+      ],
+      "countryCode": "NO"
     },
     {
       "owner": "criger",
@@ -85,7 +89,8 @@
           "name": "Agentic-Ground-Rules",
           "url": "https://github.com/criger/Agentic-Ground-Rules"
         }
-      ]
+      ],
+      "countryCode": "NO"
     },
     {
       "owner": "tvibitnmkt",
@@ -100,7 +105,8 @@
           "name": "WhaleGuruVR",
           "url": "https://github.com/tvibitnmkt/WhaleGuruVR"
         }
-      ]
+      ],
+      "countryCode": "NO"
     },
     {
       "owner": "progrium",
@@ -115,7 +121,8 @@
           "name": "authsite",
           "url": "https://github.com/progrium/authsite"
         }
-      ]
+      ],
+      "countryCode": "US"
     },
     {
       "owner": "qualweb",
@@ -130,7 +137,8 @@
           "name": "qualweb",
           "url": "https://github.com/qualweb/qualweb"
         }
-      ]
+      ],
+      "countryCode": "PT"
     },
     {
       "owner": "RightNow-AI",
@@ -145,7 +153,8 @@
           "name": "openfang",
           "url": "https://github.com/RightNow-AI/openfang"
         }
-      ]
+      ],
+      "countryCode": "JO"
     },
     {
       "owner": "kyzdes",
@@ -160,7 +169,8 @@
           "name": "fang-upgrade",
           "url": "https://github.com/kyzdes/fang-upgrade"
         }
-      ]
+      ],
+      "countryCode": "ME"
     },
     {
       "owner": "ashkulz",
@@ -175,7 +185,8 @@
           "name": "committers.top",
           "url": "https://github.com/ashkulz/committers.top"
         }
-      ]
+      ],
+      "countryCode": "IN"
     },
     {
       "owner": "DovieW",
@@ -190,7 +201,8 @@
           "name": "vscode-insiders-release-notes",
           "url": "https://github.com/DovieW/vscode-insiders-release-notes"
         }
-      ]
+      ],
+      "countryCode": "US"
     },
     {
       "owner": "kflorence",
@@ -205,7 +217,8 @@
           "name": "jquery-deserialize",
           "url": "https://github.com/kflorence/jquery-deserialize"
         }
-      ]
+      ],
+      "countryCode": "US"
     }
   ]
 }

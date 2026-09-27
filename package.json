@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "canvas": "^3.2.3",
+    "flag-icons": "^7.5.0",
     "gif-encoder-2": "^1.0.5"
   }
 }
