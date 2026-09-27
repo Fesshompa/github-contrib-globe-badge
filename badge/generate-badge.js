@@ -215,6 +215,24 @@ async function fetchAllPullRequestItems(baseQuery, fromDate, toDate) {
   return items;
 }
 
+// True when `message` has a `Co-authored-by:` trailer identifying the user,
+// either by GitHub noreply address (with or without the numeric id prefix),
+// by the user's public profile email, or by a name equal to their login.
+function isCoAuthoredBy(message, { login, id, email }) {
+  if (!message) return false;
+  const lowerLogin = login.toLowerCase();
+  const emails = new Set([`${lowerLogin}@users.noreply.github.com`]);
+  if (id) emails.add(`${id}+${lowerLogin}@users.noreply.github.com`);
+  if (email) emails.add(email.toLowerCase());
+  const trailer = /^co-authored-by:\s*(.*?)\s*<([^>]+)>\s*$/gim;
+  for (const match of message.matchAll(trailer)) {
+    const name = match[1].trim().toLowerCase();
+    const addr = match[2].trim().toLowerCase();
+    if (emails.has(addr) || name === lowerLogin) return true;
+  }
+  return false;
+}
+
 async function getContributions(user, commitCache) {
   // Cache for repository metadata (repos API — 5000 req/hour limit).
   // Failures are NOT cached, so a transient error can be retried on a later
@@ -286,12 +304,12 @@ async function getContributions(user, commitCache) {
   // Search no further back than the account's own creation date — commits
   // authored before the account existed cannot belong to it. Falls back to
   // the previous hardcoded date if the account lookup fails for any reason.
-  const accountCreatedAt = await fetchJSON(`https://api.github.com/users/${encodeURIComponent(user)}`, githubHeaders())
-    .then((info) => info.created_at)
+  const accountInfo = await fetchJSON(`https://api.github.com/users/${encodeURIComponent(user)}`, githubHeaders())
     .catch((error) => {
-      console.warn(`Could not fetch account creation date for ${user}: ${error.message}`);
+      console.warn(`Could not fetch account info for ${user}: ${error.message}`);
       return null;
     });
+  const accountCreatedAt = accountInfo?.created_at || null;
   const sinceDate = accountCreatedAt ? accountCreatedAt.slice(0, 10) : '2023-01-01';
   const untilDate = new Date().toISOString().slice(0, 10);
 
@@ -308,6 +326,16 @@ async function getContributions(user, commitCache) {
   // and keeps it well under the search API's 1000-result cap in practice.
   const baseQuery = `author:${user} is:public -user:${user}`;
   const items = await fetchAllCommitItems(baseQuery, sinceDate, untilDate);
+
+  // Commits where the user is only credited through a `Co-authored-by:`
+  // trailer are not matched by `author:`. The phrase search below is fuzzy
+  // (it is tokenized full-text search), so each hit is verified against the
+  // actual trailers in the commit message before being counted.
+  const coAuthorQuery = `"Co-authored-by: ${user}" is:public -user:${user}`;
+  const coAuthorItems = await fetchAllCommitItems(coAuthorQuery, sinceDate, untilDate);
+  const coAuthorIdentity = { login: user, id: accountInfo?.id, email: accountInfo?.email };
+  items.push(...coAuthorItems.filter((item) => isCoAuthoredBy(item.commit?.message, coAuthorIdentity)));
+
   for (const item of items) {
     const fullName = item.repository?.full_name;
     const sha = item.sha;

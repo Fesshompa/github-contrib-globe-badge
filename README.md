@@ -12,7 +12,7 @@ The animated GIF badge shows a rotating dotted world map with contribution-locat
 
 ## How it works
 
-1. GitHub Actions searches commits authored by the configured GitHub user since 2023.
+1. GitHub Actions searches commits authored by the configured GitHub user since 2023, plus commits that credit the user through a `Co-authored-by:` trailer (matched by login or GitHub noreply/public email).
 2. For each commit's repository, the generator resolves the true origin repository — following GitHub's fork `source` field, and falling back to a commits-search lookup (picking the oldest repository by creation date) to catch repositories that duplicate another repo's commit history without being a registered GitHub fork. Origins are cached per repository so this only runs once per distinct repository, not once per commit.
 3. Commits are grouped by the origin repository's owner, and each owner's public GitHub profile location is geocoded with OpenStreetMap Nominatim.
 4. The generator writes `badge.gif` for the animated profile badge and `data.json` for the interactive page.
