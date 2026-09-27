@@ -4,7 +4,7 @@ A daily-updating GitHub contribution analytics badge showing where the owners of
 
 [![My contributions badge](https://raw.githubusercontent.com/turbolego/github-contrib-globe-badge/main/badge.gif)](https://turbolego.github.io/github-contrib-globe-badge/)
 
-This project builds on [shuding/cobe](https://github.com/shuding/cobe), the WebGL globe library that renders the interactive page — cobe was the source and inspiration for this badge, though this repository's code, workflow, and generated assets have since diverged into a standalone tool.
+This is a standalone project that uses [Cobe](https://github.com/shuding/cobe), an external WebGL globe library, to render its interactive page. It is not a fork of Cobe.
 
 ## What it shows
 
@@ -57,7 +57,7 @@ The generator writes both `badge.gif` and `data.json`. GitHub Pages is configure
 
 ## Credits
 
-The interactive globe rendering is powered by [Cobe](https://github.com/shuding/cobe) by [Shu Ding](https://github.com/shuding). This repository was originally created as a fork of that project and has since grown into an independent profile-badge generator.
+The interactive globe rendering is powered by [Cobe](https://github.com/shuding/cobe) by [Shu Ding](https://github.com/shuding). Cobe is credited here as a dependency; the contributors listed for this repository reflect its own commit history.
 
 ## License
 
