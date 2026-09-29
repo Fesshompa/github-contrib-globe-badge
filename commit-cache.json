@@ -1002,5 +1002,13 @@
   "83347a065101231ed1e00f2c57dc0a49d1352d41": {
     "origin": "turbolego/github-contrib-globe-badge",
     "resolvedAt": 1790563119060
+  },
+  "380d0900ee406381ad3d405ee450a85dd03dbf23": {
+    "origin": "diegosouzapw/OmniRoute",
+    "resolvedAt": 1790652095380
+  },
+  "66017b18966f630f32b8004496e40448c33ed474": {
+    "origin": "diegosouzapw/OmniRoute",
+    "resolvedAt": 1790652095380
   }
 }
