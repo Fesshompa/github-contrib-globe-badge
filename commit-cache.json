@@ -1010,5 +1010,9 @@
   "66017b18966f630f32b8004496e40448c33ed474": {
     "origin": "diegosouzapw/OmniRoute",
     "resolvedAt": 1790652095380
+  },
+  "1e33c6caf879e204a664e85c6cd49f0c9c5e5d31": {
+    "origin": "dequelabs/axe-core",
+    "resolvedAt": 1791228598400
   }
 }

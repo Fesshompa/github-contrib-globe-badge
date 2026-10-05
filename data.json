@@ -1,7 +1,7 @@
 {
   "user": "turbolego",
-  "generatedAt": "2026-10-05T03:06:05.906Z",
-  "totalCommits": 164,
+  "generatedAt": "2026-10-05T19:30:13.741Z",
+  "totalCommits": 165,
   "totalPullRequests": 28,
   "markers": [
     {
@@ -74,10 +74,11 @@
         37.8044557,
         -122.271356
       ],
-      "commits": 2,
+      "commits": 3,
       "pullRequests": 3,
       "owners": [
         "progrium",
+        "dequelabs",
         "DovieW",
         "kflorence"
       ],
@@ -85,6 +86,10 @@
         {
           "name": "authsite",
           "url": "https://github.com/progrium/authsite"
+        },
+        {
+          "name": "axe-core",
+          "url": "https://github.com/dequelabs/axe-core"
         },
         {
           "name": "vscode-insiders-release-notes",
