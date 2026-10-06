@@ -127,36 +127,36 @@
         });
         labels.push({ element });
       });
-        const globe = createGlobe(canvas, {
-\n          devicePixelRatio: 2, width: 1200, height: 1200, phi: state.phi, theta: state.theta,
-\n          dark: 0, diffuse: 1.2, mapSamples: 16000, mapBrightness: 6, mapBaseBrightness: 0,
-\n          baseColor: [1, 1, 1], markerColor: [0.2, 0.82, 0.45], glowColor: [1, 1, 1],
-\n          markers: data.markers.map((marker, index) => ({ id: `marker-${index}`, location: marker.location, size: 0.055 })),
-\n        });
-\n        // Cobe creates a positioned anchor layer around the canvas. Labels must be
-\n        // descendants of that layer so they inherit its generated anchor variables.
-\n        const anchorLayer = canvas.parentElement;
-\n        labels.forEach(({ element }) => anchorLayer.append(element));
-\n        document.addEventListener('click', () => document.querySelectorAll('.label.open').forEach((label) => label.classList.remove('open')));
-\n        function animate() {
-\n          if (!pointer) state.phi += 0.0018;
-\n          globe.update({ phi: state.phi, theta: state.theta, scale: state.scale });
-\n          requestAnimationFrame(animate);
-\n        }
-\n        animate();
-\n        canvas.addEventListener('pointerdown', (event) => { pointer = { x: event.clientX, y: event.clientY }; canvas.setPointerCapture(event.pointerId); });
-\n        canvas.addEventListener('pointermove', (event) => {
-\n          if (!pointer) return;
-\n          state.phi += (event.clientX - pointer.x) / 300;
-\n          state.theta = clamp(state.theta + (event.clientY - pointer.y) / 1000, -0.8, 0.8);
-\n          pointer = { x: event.clientX, y: event.clientY };
-\n        });
-\n        const releasePointer = () => { pointer = null; };
-\n        canvas.addEventListener('pointerup', releasePointer);
-\n        canvas.addEventListener('pointercancel', releasePointer);
-\n        canvas.addEventListener('wheel', (event) => { event.preventDefault(); state.scale = clamp(state.scale - event.deltaY * 0.001, 0.75, 1.35); }, { passive: false });
-\n      </script>
-\n    }
-\n
+    }
+
+    const globe = createGlobe(canvas, {
+      devicePixelRatio: 2, width: 1200, height: 1200, phi: state.phi, theta: state.theta,
+      dark: 0, diffuse: 1.2, mapSamples: 16000, mapBrightness: 6, mapBaseBrightness: 0,
+      baseColor: [1, 1, 1], markerColor: [0.2, 0.82, 0.45], glowColor: [1, 1, 1],
+      markers: data.markers.map((marker, index) => ({ id: `marker-${index}`, location: marker.location, size: 0.055 })),
+    });
+    // Cobe creates a positioned anchor layer around the canvas. Labels must be
+    // descendants of that layer so they inherit its generated anchor variables.
+    const anchorLayer = canvas.parentElement;
+    labels.forEach(({ element }) => anchorLayer.append(element));
+    document.addEventListener('click', () => document.querySelectorAll('.label.open').forEach((label) => label.classList.remove('open')));
+    function animate() {
+      if (!pointer) state.phi += 0.0018;
+      globe.update({ phi: state.phi, theta: state.theta, scale: state.scale });
+      requestAnimationFrame(animate);
+    }
+    animate();
+    canvas.addEventListener('pointerdown', (event) => { pointer = { x: event.clientX, y: event.clientY }; canvas.setPointerCapture(event.pointerId); });
+    canvas.addEventListener('pointermove', (event) => {
+      if (!pointer) return;
+      state.phi += (event.clientX - pointer.x) / 300;
+      state.theta = clamp(state.theta + (event.clientY - pointer.y) / 1000, -0.8, 0.8);
+      pointer = { x: event.clientX, y: event.clientY };
+    });
+    const releasePointer = () => { pointer = null; };
+    canvas.addEventListener('pointerup', releasePointer);
+    canvas.addEventListener('pointercancel', releasePointer);
+    canvas.addEventListener('wheel', (event) => { event.preventDefault(); state.scale = clamp(state.scale - event.deltaY * 0.001, 0.75, 1.35); }, { passive: false });
+  </script>
 </body>
 </html>
