@@ -58,6 +58,7 @@
       : '';
     document.querySelector('#title').innerHTML = `<a href="https://github.com/${data.user}" target="_blank" rel="noopener noreferrer">${data.user}</a>`;
     document.querySelector('#summary').textContent = `${data.totalCommits.toLocaleString()} tracked commits · updated ${new Date(data.generatedAt).toLocaleDateString()}`;
+    const aggregatedMarkers = new Map();
     data.markers.forEach((marker, index) => {
       const countryCode = marker.countryCode || '';
 
