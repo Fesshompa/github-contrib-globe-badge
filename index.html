@@ -48,7 +48,7 @@
     const state = { phi: 0, theta: 0.18, scale: 1.05 };
     const labels = [];
     let pointer = null;
-    let data;
+
     const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
     const flagEmoji = (code) => /^[A-Z]{2}$/.test(code || '')
       ? String.fromCodePoint(...[...code].map((letter) => letter.charCodeAt(0) + 127397))
@@ -57,7 +57,7 @@
     let data = null;
     try {
       const resp = await fetch('./data.json', { cache: 'no-store' });
-      if (!resp.ok) throw new Error(`Unable to load data.json (${response.status})`);
+      if (!resp.ok) throw new Error(`Unable to load data.json (${resp.status})`);
       data = await resp.json();
     } catch (error) {
       console.error('Error loading globe data:', error);
