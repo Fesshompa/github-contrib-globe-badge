@@ -1,9 +1,7 @@
 export function groupMarkersByCountry(markers) {
   const grouped = new Map();
   for (const marker of markers) {
-    // Keep US markers separate per location/state instead of merging whole country
-    const isUS = marker.countryCode === 'US';
-    const key = isUS ? Symbol() : (marker.countryCode || Symbol());
+    const key = marker.countryCode || Symbol();
     let group = grouped.get(key);
     if (!group) {
       group = {
