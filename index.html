@@ -59,19 +59,50 @@
     document.querySelector('#title').innerHTML = `<a href="https://github.com/${data.user}" target="_blank" rel="noopener noreferrer">${data.user}</a>`;
     document.querySelector('#summary').textContent = `${data.totalCommits.toLocaleString()} tracked commits · updated ${new Date(data.generatedAt).toLocaleDateString()}`;
     data.markers.forEach((marker, index) => {
+      const countryCode = marker.countryCode || '';
+
+      // Compute aggregated stats per country
+      let aggregate = aggregatedMarkers.get(countryCode);
+      if (!aggregate) {
+        aggregate = {
+          countryCode,
+          commits: 0,
+          pullRequests: 0,
+          owners: [],
+          repositories: [],
+          position: marker.location,
+        };
+        aggregatedMarkers.set(countryCode, aggregate);
+      }
+      aggregate.commits += marker.commits;
+      aggregate.pullRequests += marker.pullRequests;
+      for (const owner of marker.owners || [marker.owner]) {
+        if (!aggregate.owners.includes(owner)) aggregate.owners.push(owner);
+      }
+      for (const repo of marker.repositories || []) {
+        if (!aggregate.repositories.some((existing) => existing.url === repo.url)) {
+          aggregate.repositories.push(repo);
+        }
+      }
+    });
+
+    const labels = [];
+    aggregatedMarkers.forEach((aggregate) => {
       const element = document.createElement('div');
       element.className = 'label';
       element.setAttribute('role', 'button');
       element.tabIndex = 0;
-      const percentage = Math.round(marker.commits / data.totalCommits * 100);
-      const repositories = (marker.repositories || []).map((repo) => (
+      const percentage = Math.round(aggregate.commits / data.totalCommits * 100);
+      const repositories = (aggregate.repositories || []).map((repo) => (
         `<a href="${repo.url}" target="_blank" rel="noopener noreferrer">${repo.url.split('/').slice(3).join('/')}</a>`
       )).join('') || '<span>No repository links available</span>';
-      const flag = flagEmoji(marker.countryCode);
-      element.innerHTML = `${flag ? `<span class="flag" aria-label="${marker.countryCode} flag">${flag}</span>` : ''}<strong>${marker.commits}</strong><span>↑ ${percentage}%</span><span class="repo-list" role="menu">${repositories}</span>`;
-      element.title = `${marker.countryCode || 'Unknown country'}: ${(marker.owners || [marker.owner]).join(', ')} · ${marker.commits} commits, ${marker.pullRequests} PRs (${percentage}% of commits)`;
-      element.style.setProperty('--label-anchor', `--cobe-marker-${index}`);
-      element.style.setProperty('--label-visible', `var(--cobe-visible-marker-${index}, 0)`);
+      const flag = flagEmoji(aggregate.countryCode);
+      element.innerHTML = `${flag ? `<span class="flag" aria-label="${aggregate.countryCode} flag">${flag}</span>` : ''}<strong>${aggregate.commits}</strong><span>↑ ${percentage}%</span><span class="repo-list" role="menu">${repositories}</span>`;
+      element.title = `${aggregate.countryCode || 'Unknown country'}: ${(aggregate.owners || []).join(', ')} · ${aggregate.commits} commits, ${aggregate.pullRequests} PRs (${percentage}% of commits)`;
+      const idx = data.markers.findIndex(m => m.countryCode === aggregate.countryCode && m.location[0] === aggregate.position[0] && m.location[1] === aggregate.position[1]);
+      const safeIdx = idx >= 0 ? idx : 0;
+      element.style.setProperty('--label-anchor', `--cobe-marker-${safeIdx}`);
+      element.style.setProperty('--label-visible', `var(--cobe-visible-marker-${safeIdx}, 0)`);
       element.addEventListener('click', (event) => {
         if (event.target.closest('a')) return;
         event.stopPropagation();
