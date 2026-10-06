@@ -48,13 +48,14 @@
     const state = { phi: 0, theta: 0.18, scale: 1.05 };
     const labels = [];
     let pointer = null;
+    let data;
     const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
     const flagEmoji = (code) => /^[A-Z]{2}$/.test(code || '')
       ? String.fromCodePoint(...[...code].map((letter) => letter.charCodeAt(0) + 127397))
       : '';
 
     try {
-      const data = await fetch('./data.json', { cache: 'no-store' }).then((response) => {
+      data = await fetch('./data.json', { cache: 'no-store' }).then((response) => {
         if (!response.ok) throw new Error(`Unable to load data.json (${response.status})`);
         return response.json();
       });
