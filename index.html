@@ -117,7 +117,7 @@
         element.style.setProperty('--label-anchor', `--cobe-marker-${safeIdx}`);
         element.style.setProperty('--label-visible', `var(--cobe-visible-marker-${safeIdx}, 0)`);
         element.addEventListener('click', (event) => {
-          if (event.target.closed('a')) return;
+          if (event.target.closest('a')) return;
           event.stopPropagation();
           document.querySelectorAll('.label.open').forEach((label) => { if (label !== element) label.classList.remove('open'); });
           element.classList.toggle('open');
