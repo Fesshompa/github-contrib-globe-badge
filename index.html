@@ -55,13 +55,16 @@
       : '';
 
     let data = null;
+    document.querySelector('#summary').textContent = 'Fetching data...';
     try {
       const resp = await fetch('./data.json', { cache: 'no-store' });
+      document.querySelector('#summary').textContent = `Fetch status: ${resp.status}`;
       if (!resp.ok) throw new Error(`Unable to load data.json (${resp.status})`);
       data = await resp.json();
+      document.querySelector('#summary').textContent = `Got data, markers: ${data.markers?.length ?? 0}`;
     } catch (error) {
       console.error('Error loading globe data:', error);
-      document.querySelector('#summary').textContent = 'Failed to load contribution data';
+      document.querySelector('#summary').textContent = `Error: ${error.message}`;
     }
     if (data) {
       document.querySelector('#title').innerHTML = `<a href="https://github.com/${data.user}" target="_blank" rel="noopener noreferrer">${data.user}</a>`;
