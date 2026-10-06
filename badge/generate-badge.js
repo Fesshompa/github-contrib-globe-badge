@@ -618,7 +618,39 @@ function renderFrame(ctx, centerLonDeg, landGrid, markers, flags, totalCommits, 
   ctx.globalAlpha = 1;
 
   const placedLabels = [];
-  for (const { marker, position: [x, y, z] } of visibleMarkers) {
+  // Aggregate US markers into a single label entry
+  const labelEntries = [];
+  const usMarkers = [];
+  for (const vm of visibleMarkers) {
+    if (vm.marker.countryCode === 'US') {
+      usMarkers.push(vm);
+    } else {
+      labelEntries.push(vm);
+    }
+  }
+  if (usMarkers.length > 0) {
+    const totalUSCommits = usMarkers.reduce((s, v) => s + v.marker.commits, 0);
+    const totalUSPRs = usMarkers.reduce((s, v) => s + v.marker.pullRequests, 0);
+    const first = usMarkers[0];
+    labelEntries.push({
+      marker: {
+        countryCode: 'US',
+        commits: totalUSCommits,
+        pullRequests: totalUSPRs,
+        owners: usMarkers.flatMap(v => v.marker.owners || [v.marker.owner]),
+        repositories: usMarkers.flatMap(v => v.marker.repositories || []),
+      },
+      position: first.position,
+      isUSAggregate: true,
+      usMarkers,
+    });
+  }
+
+  for (const entry of labelEntries) {
+    const marker = entry.marker;
+    const pos = entry.position;
+    if (!pos) continue;
+    const [x, y, z] = pos;
     const opacity = Math.min(1, z * 2.5);
     const activityCount = marker.commits + marker.pullRequests;
     const totalActivities = totalCommits + totalPullRequests;
@@ -626,7 +658,6 @@ function renderFrame(ctx, centerLonDeg, landGrid, markers, flags, totalCommits, 
 
     ctx.globalAlpha = opacity;
 
-    // Label box
     const boxWidth = 78;
     const boxHeight = 24;
     let boxX, boxY;
