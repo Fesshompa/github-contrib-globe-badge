@@ -556,7 +556,7 @@ function placeLabel(x, y, width, height, placed) {
   return [spot.left, spot.top];
 }
 
-function renderFrame(ctx, centerLonDeg, landGrid, markers, flags, totalCommits, totalPullRequests) {
+function renderFrame(ctx, centerLonDeg, landGrid, markers, flags, totalCommits, totalPullRequests, fixedLabelBoxes = null) {
   // Background
   ctx.fillStyle = '#fff';
   ctx.fillRect(0, 0, SIZE, SIZE);
@@ -629,16 +629,21 @@ function renderFrame(ctx, centerLonDeg, landGrid, markers, flags, totalCommits, 
     // Label box
     const boxWidth = 78;
     const boxHeight = 24;
-    const [boxX, boxY] = placeLabel(x, y, boxWidth, boxHeight, placedLabels);
-
-    if (Math.abs(boxX + boxWidth / 2 - x) > 5 || Math.abs(boxY + boxHeight - y) > 5) {
-      ctx.strokeStyle = '#374151';
-      ctx.lineWidth = 0.5;
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(boxX + boxWidth / 2, boxY + boxHeight / 2);
-      ctx.stroke();
+    let boxX, boxY;
+    if (fixedLabelBoxes && fixedLabelBoxes.has(marker)) {
+      const fixed = fixedLabelBoxes.get(marker);
+      boxX = fixed.boxX;
+      boxY = fixed.boxY;
+    } else {
+      [boxX, boxY] = placeLabel(x, y, boxWidth, boxHeight, placedLabels);
     }
+
+    ctx.strokeStyle = '#374151';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(boxX + boxWidth / 2, boxY + boxHeight / 2);
+    ctx.stroke();
     ctx.fillStyle = 'rgba(23, 23, 23, 0.94)';
     roundRect(ctx, boxX, boxY, boxWidth, boxHeight, 3.5);
     ctx.fill();
@@ -721,9 +726,23 @@ async function main() {
   encoder.setRepeat(0); // loop forever
   encoder.setQuality(10);
   encoder.start();
+
+  // Pre-compute fixed label positions at angle 0 so labels stay in place while globe rotates
+  const boxWidth = 78;
+  const boxHeight = 24;
+  const fixedLabelBoxes = new Map();
+  const placedLabels = [];
+  for (const marker of data.markers) {
+    const pos0 = project(marker.location[0], marker.location[1], 0);
+    if (!pos0) continue;
+    const [boxX, boxY] = placeLabel(pos0[0], pos0[1], boxWidth, boxHeight, placedLabels);
+    fixedLabelBoxes.set(marker, { boxX, boxY });
+  }
+
   for (let i = 0; i < FRAMES; i += 1) {
-    const angle = (360 / FRAMES) * i;
-    renderFrame(ctx, angle, landGrid, data.markers, flags, data.totalCommits, data.totalPullRequests);
+    // Reverse rotation direction
+    const angle = (360 / FRAMES) * (FRAMES - 1 - i);
+    renderFrame(ctx, angle, landGrid, data.markers, flags, data.totalCommits, data.totalPullRequests, fixedLabelBoxes);
     encoder.addFrame(ctx);
   }
   encoder.finish();
