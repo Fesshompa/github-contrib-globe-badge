@@ -654,8 +654,8 @@ function renderFrame(ctx, centerLonDeg, landGrid, markers, flags, totalCommits, 
 
     ctx.globalAlpha = opacity;
 
-    const boxWidth = 156;
-    const boxHeight = 48;
+    const boxWidth = 109;
+    const boxHeight = 34;
     const [boxX, boxY] = placeLabel(x, y, boxWidth, boxHeight, placedLabels);
 
     if (Math.abs(boxX + boxWidth / 2 - x) > 5 || Math.abs(boxY + boxHeight - y) > 5) {
@@ -667,21 +667,17 @@ function renderFrame(ctx, centerLonDeg, landGrid, markers, flags, totalCommits, 
       ctx.stroke();
     }
     ctx.fillStyle = 'rgba(23, 23, 23, 0.94)';
-    roundRect(ctx, boxX, boxY, boxWidth, boxHeight, 7);
+    roundRect(ctx, boxX, boxY, boxWidth, boxHeight, 5);
     ctx.fill();
 
     const flag = flags.get(group.countryCode);
-    if (flag) ctx.drawImage(flag, boxX + 8, boxY + 11, 28, 21);
+    if (flag) ctx.drawImage(flag, boxX + 6, boxY + 8, 20, 15);
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 14px monospace';
-    ctx.textBaseline = 'middle';
-    ctx.textAlign = 'left';
-    const textX = flag ? boxX + 43 : boxX + 9;
-    ctx.fillText(`${group.commits} commits`, textX, boxY + 16);
-    ctx.fillText(`${group.pullRequests} PRs`, textX, boxY + 34);
-    ctx.fillStyle = '#34d399';
-    ctx.font = '10px monospace';
-    ctx.fillText(`↑ ${percentage}%`, boxX + 115, boxY + 34);
+    ctx.font = 'bold 10px monospace';
+    ctx.fillText(`${group.commits} commits`, textX, boxY + 12);
+    ctx.fillText(`${group.pullRequests} PRs`, textX, boxY + 24);
+    ctx.font = '7px monospace';
+    ctx.fillText(`↑ ${percentage}%`, boxX + 80, boxY + 24);
 
     ctx.globalAlpha = 1;
   }
