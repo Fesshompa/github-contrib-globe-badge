@@ -10,7 +10,7 @@ const CX = SIZE / 2;
 const CY = SIZE / 2;
 const RADIUS = 238;
 const FRAMES = 120;
-const FRAME_DELAY = 50; // ms — 120 frames × 50ms = 6s per rotation (50% slower)
+const FRAME_DELAY = 100; // ms — 120 frames × 100ms = 12s per rotation (50% slower)
 const WORLD_GEOJSON_URL = 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson';
 
 function getRepositoryOwner() {
@@ -654,8 +654,8 @@ function renderFrame(ctx, centerLonDeg, landGrid, markers, flags, totalCommits, 
 
     ctx.globalAlpha = opacity;
 
-    const boxWidth = 78;
-    const boxHeight = 24;
+    const boxWidth = 156;
+    const boxHeight = 48;
     const [boxX, boxY] = placeLabel(x, y, boxWidth, boxHeight, placedLabels);
 
     if (Math.abs(boxX + boxWidth / 2 - x) > 5 || Math.abs(boxY + boxHeight - y) > 5) {
@@ -667,21 +667,21 @@ function renderFrame(ctx, centerLonDeg, landGrid, markers, flags, totalCommits, 
       ctx.stroke();
     }
     ctx.fillStyle = 'rgba(23, 23, 23, 0.94)';
-    roundRect(ctx, boxX, boxY, boxWidth, boxHeight, 3.5);
+    roundRect(ctx, boxX, boxY, boxWidth, boxHeight, 7);
     ctx.fill();
 
     const flag = flags.get(group.countryCode);
-    if (flag) ctx.drawImage(flag, boxX + 4, boxY + 5.5, 14, 10.5);
+    if (flag) ctx.drawImage(flag, boxX + 8, boxY + 11, 28, 21);
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 7px monospace';
+    ctx.font = 'bold 14px monospace';
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
-    const textX = flag ? boxX + 21.5 : boxX + 4.5;
-    ctx.fillText(`${group.commits} commits`, textX, boxY + 8);
-    ctx.fillText(`${group.pullRequests} PRs`, textX, boxY + 17);
+    const textX = flag ? boxX + 43 : boxX + 9;
+    ctx.fillText(`${group.commits} commits`, textX, boxY + 16);
+    ctx.fillText(`${group.pullRequests} PRs`, textX, boxY + 34);
     ctx.fillStyle = '#34d399';
-    ctx.font = '5px monospace';
-    ctx.fillText(`↑ ${percentage}%`, boxX + 57.5, boxY + 17);
+    ctx.font = '10px monospace';
+    ctx.fillText(`↑ ${percentage}%`, boxX + 115, boxY + 34);
 
     ctx.globalAlpha = 1;
   }
