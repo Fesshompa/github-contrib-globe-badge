@@ -671,6 +671,7 @@ function renderFrame(ctx, centerLonDeg, landGrid, markers, flags, totalCommits, 
     ctx.fill();
 
     const flag = flags.get(group.countryCode);
+    const textX = flag ? boxX + 30 : boxX + 6;
     if (flag) ctx.drawImage(flag, boxX + 6, boxY + 8, 20, 15);
     ctx.fillStyle = '#fff';
     ctx.font = 'bold 10px monospace';
