@@ -1,8 +1,13 @@
 export function groupMarkersByCountry(markers) {
-  const grouped = new Map();
+  // First group by countryCode + location to keep a single dot per unique GPS location
+  const byLocation = new Map();
   for (const marker of markers) {
-    const key = marker.countryCode || Symbol();
-    let group = grouped.get(key);
+    const lat = marker.location?.[0];
+    const lon = marker.location?.[1];
+    const locKey = `${lat},${lon}`;
+    const countryKey = marker.countryCode || '__unknown__';
+    const key = `${countryKey}::${locKey}`;
+    let group = byLocation.get(key);
     if (!group) {
       group = {
         countryCode: marker.countryCode || null,
@@ -12,7 +17,7 @@ export function groupMarkersByCountry(markers) {
         owners: [],
         repositories: [],
       };
-      grouped.set(key, group);
+      byLocation.set(key, group);
     }
     group.commits += marker.commits;
     group.pullRequests += marker.pullRequests;
@@ -25,5 +30,5 @@ export function groupMarkersByCountry(markers) {
       }
     }
   }
-  return [...grouped.values()];
+  return [...byLocation.values()];
 }
