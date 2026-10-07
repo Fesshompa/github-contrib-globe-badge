@@ -617,10 +617,38 @@ function renderFrame(ctx, centerLonDeg, landGrid, markers, flags, totalCommits, 
   }
   ctx.globalAlpha = 1;
 
-  const placedLabels = [];
+  // One label per country (aggregate commits/PRs across all locations for that country)
+  const countryGroups = new Map();
   for (const { marker, position: [x, y, z] } of visibleMarkers) {
+    const code = marker.countryCode || '__unknown__';
+    let group = countryGroups.get(code);
+    if (!group) {
+      group = {
+        countryCode: marker.countryCode,
+        commits: 0,
+        pullRequests: 0,
+        // Use the first visible position as anchor for the country label
+        anchor: { x, y, z },
+      };
+      countryGroups.set(code, group);
+    }
+    group.commits += marker.commits;
+    group.pullRequests += marker.pullRequests;
+    // Prefer the marker with higher activity as anchor for better visibility
+    const activity = marker.commits + marker.pullRequests;
+    const currentActivity = group.anchor.activity || 0;
+    if (activity > currentActivity) {
+      group.anchor = { x, y, z, activity };
+    } else if (!group.anchor.activity) {
+      group.anchor.activity = 0;
+    }
+  }
+
+  const placedLabels = [];
+  for (const group of countryGroups.values()) {
+    const { x, y, z } = group.anchor;
     const opacity = Math.min(1, z * 2.5);
-    const activityCount = marker.commits + marker.pullRequests;
+    const activityCount = group.commits + group.pullRequests;
     const totalActivities = totalCommits + totalPullRequests;
     const percentage = totalActivities ? Math.round((activityCount / totalActivities) * 100) : 0;
 
@@ -642,15 +670,15 @@ function renderFrame(ctx, centerLonDeg, landGrid, markers, flags, totalCommits, 
     roundRect(ctx, boxX, boxY, boxWidth, boxHeight, 3.5);
     ctx.fill();
 
-    const flag = flags.get(marker.countryCode);
+    const flag = flags.get(group.countryCode);
     if (flag) ctx.drawImage(flag, boxX + 4, boxY + 5.5, 14, 10.5);
     ctx.fillStyle = '#fff';
     ctx.font = 'bold 7px monospace';
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
     const textX = flag ? boxX + 21.5 : boxX + 4.5;
-    ctx.fillText(`${marker.commits} commits`, textX, boxY + 8);
-    ctx.fillText(`${marker.pullRequests} PRs`, textX, boxY + 17);
+    ctx.fillText(`${group.commits} commits`, textX, boxY + 8);
+    ctx.fillText(`${group.pullRequests} PRs`, textX, boxY + 17);
     ctx.fillStyle = '#34d399';
     ctx.font = '5px monospace';
     ctx.fillText(`↑ ${percentage}%`, boxX + 57.5, boxY + 17);
