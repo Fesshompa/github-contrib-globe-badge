@@ -1,13 +1,10 @@
 name: Update cobe profile badge
-
 on:
   schedule:
-    - cron: '0 0 * * *'   # daily
+    - cron: '0 0 * * *'
   workflow_dispatch:
-
 permissions:
   contents: write
-
 jobs:
   build-badge:
     runs-on: ubuntu-latest
@@ -28,9 +25,14 @@ jobs:
           GITHUB_ACTOR: ${{ github.repository_owner }}
           GITHUB_TOKEN: ${{ github.token }}
         run: node badge/generate-badge.js
+      - name: Replace turbolego with repository owner
+        env:
+          REPO_OWNER: ${{ github.repository_owner }}
+        run: |
+          sed -i "s/turbolego/$REPO_OWNER/g" index.html README.md
       - name: Commit badge and analytics data
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "Update cobe profile badge data"
-          file_pattern: 'badge.gif data.json commit-cache.json'
+          file_pattern: 'badge.gif data.json commit-cache.json index.html README.md'
           branch: main
