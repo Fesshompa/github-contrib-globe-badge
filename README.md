@@ -21,10 +21,12 @@ The animated GIF badge shows a rotating dotted world map with country markers, f
 
 ## Adding the badge to a profile README
 
-Use the linked-image Markdown below. Replace `turbolego` with your GitHub username if you fork the repository:
+Fork the repository, then the workflow will automatically use your GitHub username to generate the badge. No changes to the workflow are needed.
+
+Add the badge to your profile README using the linked-image Markdown below. Replace `turbolego` with your GitHub username:
 
 ```markdown
-[![My contributions badge](https://raw.githubusercontent.com/turbolego/github-contrib-globe-badge/main/badge.gif)](https://turbolego.github.io/github-contrib-globe-badge/)
+[![My contributions badge](https://raw.githubusercontent.com/<YOUR_USERNAME>/github-contrib-globe-badge/main/badge.gif)](https://<YOUR_USERNAME>.github.io/github-contrib-globe-badge/)
 ```
 
 The outer link opens the interactive GitHub Pages globe in a new browser tab when the profile visitor clicks the badge link.
@@ -48,10 +50,11 @@ The contribution date range is controlled by the `author-date:>2023-01-01` query
 
 ```bash
 npm install
-GITHUB_ACTOR=turbolego node badge/generate-badge.js
+# For local testing, set GITHUB_ACTOR to your GitHub username:
+GITHUB_ACTOR=<YOUR_USERNAME> node badge/generate-badge.js
 ```
 
-The generator writes both `badge.gif` and `data.json`. To update the committed badge and country codes from the existing `data.json` without querying GitHub again, run `node badge/generate-badge.js --render-only`.
+The generator writes both `badge.gif` and `data.json`. In the GitHub Actions workflow, `GITHUB_ACTOR` is automatically set to `${{ github.repository_owner }}` (the fork owner), so no manual configuration is required. To update the committed badge and country codes from the existing `data.json` without querying GitHub again, run `node badge/generate-badge.js --render-only`.
 
 GitHub Pages is configured to serve the repository's `main` branch root at:
 
