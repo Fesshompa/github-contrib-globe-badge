@@ -1,7 +1,7 @@
 {
   "user": "Fesshompa",
-  "generatedAt": "2026-10-19T04:18:40.131Z",
-  "totalCommits": 190,
+  "generatedAt": "2026-10-20T04:29:44.706Z",
+  "totalCommits": 197,
   "totalPullRequests": 10,
   "markers": [
     {
@@ -10,7 +10,7 @@
         59.9685301,
         10.4690248
       ],
-      "commits": 185,
+      "commits": 192,
       "pullRequests": 7,
       "owners": [
         "turbolego"
@@ -83,24 +83,6 @@
         {
           "name": "axe-core",
           "url": "https://github.com/dequelabs/axe-core"
-        }
-      ]
-    },
-    {
-      "countryCode": "BR",
-      "location": [
-        -23.5506507,
-        -46.6333824
-      ],
-      "commits": 1,
-      "pullRequests": 0,
-      "owners": [
-        "diegosouzapw"
-      ],
-      "repositories": [
-        {
-          "name": "OmniRoute",
-          "url": "https://github.com/diegosouzapw/OmniRoute"
         }
       ]
     }
