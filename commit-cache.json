@@ -1013,7 +1013,7 @@
   },
   "1e33c6caf879e204a664e85c6cd49f0c9c5e5d31": {
     "origin": "dequelabs/axe-core",
-    "resolvedAt": 1791228598400
+    "resolvedAt": 1793859366846
   },
   "15f65b7a74a282ab9429db0edcee2f019da98c7a": {
     "origin": "turbolego/github-contrib-globe-badge",
@@ -2114,5 +2114,41 @@
   "6c5daa77ad425d884938c820e09c8d79d377f836": {
     "origin": "turbolego/Lekesafari",
     "resolvedAt": 1793771650801
+  },
+  "ad586a1710b05d209384c59298eb8f4ab1b66be8": {
+    "origin": "turbolego/Lekesafari",
+    "resolvedAt": 1793859366846
+  },
+  "c8fa4a794b458aea334ddb31c967c32296ee30c8": {
+    "origin": "turbolego/Lekesafari",
+    "resolvedAt": 1793859366846
+  },
+  "21712c3c9a6d67ecf6b8fcf32d43bb44671ec35a": {
+    "origin": "turbolego/Lekesafari",
+    "resolvedAt": 1793859366846
+  },
+  "0cdf561a0fe070859ab95815a1616f2756f43c05": {
+    "origin": "turbolego/Lekesafari",
+    "resolvedAt": 1793859366846
+  },
+  "92ae215b983cbf75dfba8fe562652e66c7cb2bac": {
+    "origin": "turbolego/Lekesafari",
+    "resolvedAt": 1793859366846
+  },
+  "9c5ebf2c5e9557a69b0f4904e19657e04bb072a2": {
+    "origin": "turbolego/Lekesafari",
+    "resolvedAt": 1793859366846
+  },
+  "37402aac119c7c9f7470eefc494424ea84a928a5": {
+    "origin": "turbolego/Lekesafari",
+    "resolvedAt": 1793859366846
+  },
+  "5eb3d1206134c0610abf7c177cad1f21d16b235f": {
+    "origin": "turbolego/Lekesafari",
+    "resolvedAt": 1793859366846
+  },
+  "0b4bf0e6153f7fce90283871f39d6458e3107ef6": {
+    "origin": "turbolego/Lekesafari",
+    "resolvedAt": 1793859366846
   }
 }
