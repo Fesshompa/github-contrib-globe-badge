@@ -1,7 +1,7 @@
 {
   "user": "Fesshompa",
-  "generatedAt": "2026-11-26T07:55:19.163Z",
-  "totalCommits": 264,
+  "generatedAt": "2026-11-27T07:56:10.062Z",
+  "totalCommits": 263,
   "totalPullRequests": 10,
   "markers": [
     {
@@ -10,16 +10,12 @@
         59.9685301,
         10.4690248
       ],
-      "commits": 259,
+      "commits": 258,
       "pullRequests": 7,
       "owners": [
         "turbolego"
       ],
       "repositories": [
-        {
-          "name": "GuessTheSongYear",
-          "url": "https://github.com/turbolego/GuessTheSongYear"
-        },
         {
           "name": "HarryHandel",
           "url": "https://github.com/turbolego/HarryHandel"
